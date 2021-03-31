@@ -2,8 +2,8 @@ module.exports = class Roll{
 
     static DICE = [10];
     static PREFIX = "/roll ";
+    static DICELIMITE = 50;
     datas = [];
-    objectData = {};
 
     constructor(numberOfDice){
         this.numberOfDice = numberOfDice;
@@ -23,11 +23,16 @@ module.exports = class Roll{
             return r;
         },0);
     }
+    mise(){
+        return "Work in Progress"
+        
+    }
     rerollDice(){
-        console.log(arguments)
         for(const arg in arguments){
-            this.datas[arguments[arg]] = Math.floor(Math.random() * Math.floor(this.typeOfDice))+1;
+            if(parseInt(arguments[arg])>this.datas.length){return 0}
+            else{this.datas[parseInt(arguments[arg])-1] = Math.floor(Math.random() * Math.floor(this.typeOfDice))+1;}
         }
+        return 1;
     }
 
 
