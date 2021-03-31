@@ -1,45 +1,52 @@
 const discordTools = require('discord.js');
 const events = require('events');
-const token = require('../module/Token')
+const rollTools = require('../module/Roll');
+const TOKEN = require('../module/Token');
+const prefixeTools = require('../module/prefix')
 
 const botEvent = new events.EventEmitter();
 const client = new discordTools.Client();
-
-const PREFIX = "-";
-let numberOfDice;
-let typeOfDice;
-const DICE = [4,6,8,10,12,20];
-const datas = [];
+let roll;
 
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`)
 });
 
-//2D10
 client.on('message',msg=> {
-    if(msg.toString().trim().toLowerCase().includes("d")&&msg.toString().trim().charAt(0)==="-"){
-        [numberOfDice,typeOfDice] = msg.toString().trim().slice(1).split("d")
-        if(parseInt(numberOfDice)>100)msg.reply("Too many dice, inférieur à 100 Connard");
-        else if(DICE.find(e=>e===parseInt(typeOfDice))===undefined)msg.reply(`${typeOfDice} n'existe pas Enculé`)
+    // /roll 1
+    if(msg.toString().trim().slice(0,6)===prefixeTools.prefixRoll){
+        let numberOfDice = parseInt(msg.toString().trim().slice(6))
+        if(numberOfDice>100){msg.reply("Too many dice, inférieur à 100");}
+        //else if(rollTools.DICE.find(e=>e===parseInt(typeOfDice))===undefined)msg.reply(`${typeOfDice} n'est pas initialisé comme dé valide`)
         else {
-            botEvent.emit("rand");
-            msg.reply(`\n${datas.reduce( (s,e) => {
-                s+=`🎲 ${e} \n`;
+            roll = new rollTools(numberOfDice)
+            roll.rollDice();
+            msg.reply(`\n${roll.datas.reduce( (s,e,i) => {
+                s+=`${i}) 🎲 ${e} \n`;
                 return s;
-            },"")}`) 
-            console.log(datas)
-            datas.splice(0,datas.length)
+                },"")}Résultat : ${roll.result()}\nMises : ${parseInt(roll.result()/10)}`) 
+        }
+        
+    }
+    // /reroll arg
+    if(msg.toString().trim().slice(0,8)===prefixeTools.prefixReRoll){
+        msg.reply('Yes my lord ' + msg.toString().trim().slice(8))
+        if(roll === undefined){
+            msg.reply("Lancer d'abord des dés")
+        }
+        else {
+            roll.rerollDice(...msg.toString().trim().slice(8).split(" "))
+            msg.reply(`\n${roll.datas.reduce( (s,e,i) => {
+                s+=`${i}) 🎲 ${e} \n`;
+                return s;
+                },"")}Résultat : ${roll.result()}\nMises : ${parseInt(roll.result()/10)}`) 
         }
     }
-    
-    
+
+    // /map
+    if(msg.toString().trim()==="/map"){
+        msg.channel.send("Theah :", {files: ["./img/theah.PNG"]});
+    }
 });
 
-botEvent.on("rand",()=>{
-    console.log("Bot")
-    for(let i=0;i<parseInt(numberOfDice);i++){
-        datas.push(Math.floor(Math.random() * Math.floor(typeOfDice))+1);
-    }
-})
-
-client.login(token)
+client.login(TOKEN)

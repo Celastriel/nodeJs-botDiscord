@@ -1,0 +1,12 @@
+Profil :
+vie
+spiral - afficher la situation
+héroisme
+richesses
+Réput
+
+
+Map :
+/map theah
+
+dé => profil
