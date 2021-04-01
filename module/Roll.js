@@ -22,17 +22,47 @@ module.exports = class Roll{
             return r;
         },0);
     }
+
     mise(){
-        if(this.datas.reduce( (a,e) => {
+       /* if(this.datas.reduce( (a,e) => {
             if(e>4)a++;
             return a;
         },0)===this.datas.length-1&&this.result().toString().charAt(1)<5){
             return Math.floor(this.result()/10)-1
         }else{
             return Math.floor(this.result()/10)
+        } */
+        let mise = 0;
+        let rolls = this.datas;
+        rolls.sort((e1, e2) => {return e1>e2});
+        for(let i = 0; i< rolls.length; i++){
+            if(rolls[i]){
+                for(let y = rolls.length-1; y>0; y--){
+                    if(rolls[y]){
+                        if(rolls[i]+rolls[y] >= 10){
+                            ++mise;
+                            rolls[i] = null;
+                            rolls[y] = null;
+                            break;
+                        }
+                    }
+                }
+            }
         }
-        
+        let tmp = e;
+        rolls.forEach(e => {
+            if(e){
+                tmp+=e;
+            }
+        });
+
+        if(tmp >= 10){
+            ++mise;
+        }
+
+        return mise;
     }
+    
     rerollDice(){
         for(const arg in arguments){
             if(parseInt(arguments[arg])>this.datas.length){return 0}
@@ -40,6 +70,4 @@ module.exports = class Roll{
         }
         return 1;
     }
-
-
 }
