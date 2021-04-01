@@ -1,7 +1,6 @@
 module.exports = class Roll{
 
     static DICE = [10];
-    static PREFIX = "/roll ";
     static DICELIMITE = 50;
     datas = [];
 
@@ -24,7 +23,14 @@ module.exports = class Roll{
         },0);
     }
     mise(){
-        return "Work in Progress"
+        if(this.datas.reduce( (a,e) => {
+            if(e>4)a++;
+            return a;
+        },0)===this.datas.length-1&&this.result().toString().charAt(1)<5){
+            return Math.floor(this.result()/10)-1
+        }else{
+            return Math.floor(this.result()/10)
+        }
         
     }
     rerollDice(){

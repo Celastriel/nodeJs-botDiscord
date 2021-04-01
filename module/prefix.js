@@ -1,2 +1,5 @@
-exports.prefixRoll = "/roll "
-exports.prefixReRoll = "/reroll "
+exports.prefixRoll = "&roll "
+exports.prefixReRoll = "&reroll "
+exports.prefixMap = "&map"
+exports.prefixHelp = "&help"
+exports.prefixDeck = "&deck"
