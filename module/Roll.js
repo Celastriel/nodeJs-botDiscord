@@ -33,23 +33,24 @@ module.exports = class Roll{
             return Math.floor(this.result()/10)
         } */
         let mise = 0;
-        let rolls = this.datas;
-        rolls.sort((e1, e2) => {return e1>e2});
-        for(let i = 0; i< rolls.length; i++){
-            if(rolls[i]){
-                for(let y = rolls.length-1; y>0; y--){
-                    if(rolls[y]){
-                        if(rolls[i]+rolls[y] >= 10){
-                            ++mise;
-                            rolls[i] = null;
-                            rolls[y] = null;
-                            break;
+        let rolls = this.datas.sort((e1, e2) => {return e1>e2}); //tri par ordre décroissant
+        for(let i = 0; i< rolls.length; i++){ //on boucle sur ke tableau
+            if(rolls[i]){ // si la valeur est null on passe
+                for(let y = rolls.length-1; y>0; y--){ // on boucle sur l'inverse du tableau
+                    if(rolls[y]){ //si y null on passe
+                        if(i !== y){ 
+                            if(rolls[i]+rolls[y] >= 10){
+                                ++mise;
+                                rolls[i] = null;
+                                rolls[y] = null;
+                                break;
+                            }
                         }
                     }
                 }
             }
         }
-        let tmp = e;
+        let tmp = 0;
         rolls.forEach(e => {
             if(e){
                 tmp+=e;
