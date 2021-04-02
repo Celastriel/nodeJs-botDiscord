@@ -5,14 +5,15 @@ module.exports = class Roll{
     datas = [];
 
     constructor(numberOfDice){
-        this.numberOfDice = numberOfDice;
+        this.numberOfDice = parseInt(numberOfDice);
         this.typeOfDice = 10;
     }
 
     rollDice(){
         this.datas = [];
-        for(let i=0;i<parseInt(this.numberOfDice);i++){
-            this.datas.push(Math.floor(Math.random() * Math.floor(this.typeOfDice))+1);
+        for(let i=0;i<this.numberOfDice;i++){
+            let tmp = parseInt(Math.floor(Math.random() * Math.floor(this.typeOfDice))+1)
+            this.datas.push(tmp);
         }
     }
 
@@ -31,9 +32,9 @@ module.exports = class Roll{
             return Math.floor(this.result()/10)-1
         }else{
             return Math.floor(this.result()/10)
-        } */
+        }*/
         let mise = 0;
-        let rolls = this.datas.sort((e1, e2) => {return e1>e2}); //tri par ordre décroissant
+        let rolls = [...this.datas.sort((e1, e2) => {return e1>e2})]; //tri par ordre décroissant
         for(let i = 0; i< rolls.length; i++){ //on boucle sur ke tableau
             if(rolls[i]){ // si la valeur est null on passe
                 for(let y = rolls.length-1; y>0; y--){ // on boucle sur l'inverse du tableau
@@ -66,6 +67,7 @@ module.exports = class Roll{
     
     rerollDice(){
         for(const arg in arguments){
+            console.log(arguments[arg])
             if(parseInt(arguments[arg])>this.datas.length){return 0}
             else{this.datas[parseInt(arguments[arg])-1] = Math.floor(Math.random() * Math.floor(this.typeOfDice))+1;}
         }

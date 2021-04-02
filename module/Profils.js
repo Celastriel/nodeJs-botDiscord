@@ -1,6 +1,7 @@
 module.exports = class Profils{
 
     roll;
+    deck = [];
 
     constructor(id,name, health, heroism, wealth, reputation){
         this.id = id;
