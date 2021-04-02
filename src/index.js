@@ -1,13 +1,16 @@
 const discordTools = require('discord.js');
 const events = require('events');
 const rollTools = require('../module/Roll');
+const Profils = require('../module/Profils')
 const TOKEN = require('../module/Token');
 const prefixeTools = require('../module/prefix')
-const deck = require('../module/deck')
+const deck = require('../module/deck');
+const { profile } = require('console');
 
 const botEvent = new events.EventEmitter();
 const client = new discordTools.Client();
 let roll;
+const players = [];
 
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`)
@@ -16,6 +19,16 @@ client.on('ready', () => {
 client.on('message',msg=> {
     if(msg.toString().trim() === prefixeTools.prefixHelp){
         msg.channel.send(`\`\`\`Command:\n&roll n: Lancer les dés\n&reroll ...n: Relancer les dés de votre choix\n&map : Afficher la carte\n&deck : vous envoye le deck en message privé\`\`\``)
+    }
+    if(msg.toString().trim().split(" ")[0]===prefixeTools.prefixInit&&msg.toString().trim().split(" ")[1]===undefined){
+        msg.channel.send(`\`\`\`&init nom heroisme richesse reputation \`\`\``)
+    }
+
+    if(msg.toString().trim().split(" ")[0]===prefixeTools.prefixInit&&msg.toString().trim().split(" ")[1]!==undefined){
+        const info = [...msg.toString().trim().split(" ")]
+        let player = new Profils(msg.author.id,info[1],20,info[2],info[3],info[4])
+        players.push(player)
+        msg.channel.send(`\`\`\`Joueur créer : ${player.name}\`\`\``)
     }
 
     // /roll 1

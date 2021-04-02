@@ -2,7 +2,8 @@ module.exports = class Profils{
 
     roll;
 
-    constructor(name, health, heroism, wealth, reputation){
+    constructor(id,name, health, heroism, wealth, reputation){
+        this.id = id;
         this.name = name;
         this.health = health;
         this.heroism = heroism;

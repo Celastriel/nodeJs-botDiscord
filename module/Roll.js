@@ -49,7 +49,7 @@ module.exports = class Roll{
                 }
             }
         }
-        let tmp = e;
+        let tmp;
         rolls.forEach(e => {
             if(e){
                 tmp+=e;
