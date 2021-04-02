@@ -34,7 +34,7 @@ module.exports = class Roll{
             return Math.floor(this.result()/10)
         }*/
         let mise = 0;
-        let rolls = this.datas; 
+        let rolls = [...this.datas]; 
         rolls.sort().reverse(); //tri par ordre decroissant pour maximiser les paires
         
         console.log(rolls);
