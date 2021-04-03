@@ -3,6 +3,7 @@ module.exports = class Profils{
     roll;
     deck = {};
     bufferCard;
+    isDuellist;
 
     constructor(id,name, health, heroism, wealth, reputation){
         this.id = id;
@@ -11,10 +12,25 @@ module.exports = class Profils{
         this.heroism = heroism;
         this.wealth = wealth;
         this.reputation = reputation;
+        this.isDuellist = false;
     }
 
     showInfos(){
-        return "Bonjour "+ this.name +", vous avez " + this.health + "pv, " + heroism + "points d'héroisme, votre richesse est de " + this.wealth + ", et votre réputation de " + this.reputation; 
+        return "\nBonjour "+ this.name +", vous avez " + this.heroism + " points d'héroisme, votre richesse est de " + this.wealth + ", et votre réputation de " + this.reputation; 
+    }
+    showHealth(){
+        const spiral = ["","","","",1,"","","","",2,"","","","",3,"","","","",4]
+        return `Spiral de la mort :\n${spiral.map((e,i)=>{
+            if(i===(19-this.health)){
+                return `[ ${e}x ]`
+            }else{
+                return `[ ${e} ]`
+            }
+        })}`
+    }
+
+    showDeck(){
+            return Object.values(this.deck);
     }
 
     changeStats(type, number){
