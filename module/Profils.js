@@ -1,7 +1,8 @@
 module.exports = class Profils{
 
     roll;
-    deck = [];
+    deck = {};
+    bufferCard;
 
     constructor(id,name, health, heroism, wealth, reputation){
         this.id = id;

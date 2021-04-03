@@ -12,6 +12,7 @@ const Roll = require('../module/Roll');
 const jsonPath = "./json/users.json"
 const botEvent = new events.EventEmitter();
 const client = new discordTools.Client();
+let instanceDuel = [];
 let idUser;
 let roll;
 let players = [];
@@ -20,7 +21,7 @@ client.on('ready', async () => {
     console.log(`Logged in as ${client.user.tag}!`)
     if(fs.existsSync(jsonPath)){
         const json = await fsPromise.readFile(jsonPath,'utf-8');
-        console.log(json)
+        //console.log(json)
         players = JSON.parse(json)
         players = players.map( e => {
             return new Profils(e.id,e.name,parseInt(e.health),parseInt(e.heroism),parseInt(e.wealth),parseInt(e.reputation));
@@ -31,12 +32,38 @@ client.on('ready', async () => {
 });
 
 client.on('message',async msg=> {
-
     idUser = msg.author.id
+    help(msg);
+    init(msg);
+    rollDice(msg);
+    duel(msg);
+    // /map
+    if(msg.toString().trim()===prefixeTools.prefixMap){
+        msg.channel.send(`Theah :`, {files: ["./img/theah.PNG"]});
+    }
+    // DECK
+    if(msg.toString().trim().split(" ")[0]===prefixeTools.prefixDeck){
+        if(msg.toString().trim().length>5){
+            if(!deck[msg.toString().trim().split(" ")[1]])msg.channel.send("Cartes introuvable")
+            else {
+                msg.reply("La carte vous-on étais envoyer en message privé")
+                msg.author.send({files: [deck[msg.toString().trim().split(" ")[1]]]})}
+        }else{
+            msg.reply("Les cartes vous-on étais envoyer en message privé")
+            let tmpDeck = Object.keys(deck) 
+            msg.author.send(`\`\`\`${tmpDeck.map(e=>`🎴 ${e}`).join("\n")}\`\`\``)
+        }
+    }
+    save(msg)
+});
 
+const help = msg => {
     if(msg.toString().trim() === prefixeTools.prefixHelp){
         msg.channel.send(`\`\`\`Command:\n&roll n: Lancer les dés\n&reroll ...n: Relancer les dés de votre choix\n&map : Afficher la carte\n&deck : vous envoye le deck en message privé\`\`\``)
     }
+}
+
+const init = msg => {
     if(msg.toString().trim().split(" ")[0]===prefixeTools.prefixInit&&msg.toString().trim().split(" ")[1]===undefined){
         msg.channel.send(`\`\`\`&init nom heroisme richesse reputation \`\`\``)
     }
@@ -55,8 +82,39 @@ client.on('message',async msg=> {
         }
         
     }
+}
+const duel = msg => {
+    if(msg.toString().trim().split(" ")[0]===prefixeTools.prefixDuel){
+        player1 = players.find(e=>e.id === idUser);
+        player2 = players.find(e=>e.name === (msg.toString().trim().split(" ")[2]));
+        if(players2 === undefined){
+            msg.channel.send("Votre opposent n'existe pas")
+        }else{
+            instanceDuel.push(player1,player2);
+        }
+    }
+    if(msg.toString().trim().split(" ")[0]===prefixeTools.prefixDuel){
+        if(instanceDuel.length === 0){
+            msg.channel.send("Aucun Duel en cour")
+        }else{
+            if(instanceDuel[0].id != idUser){
+                msg.channel.send("Vous ne participez pas à ce duel ou ce n'est pas votre tour !")
+            }else{
+                //
+                // Play card
+                //
+                instanceDuel = instanceDuel.reverse();
+            }
+        }
+    }
+    if(msg.toString().trim().split(" ")[0]===prefixeTools.prefixDuelEnd){
+        msg.channel.send("Duel terminer")
+        instanceDuel = [];
+    }
+}
 
-    // roll 1
+const rollDice = msg => {
+    // roll
     if(msg.toString().trim().slice(0,6)===prefixeTools.prefixRoll){
         let numberOfDice = parseInt(msg.toString().trim().slice(6))
         let user = players.find(e=>e.id === idUser);
@@ -109,27 +167,9 @@ client.on('message',async msg=> {
             }
         }
     }
+}
 
-    // /map
-    if(msg.toString().trim()===prefixeTools.prefixMap){
-        msg.channel.send(`Theah :`, {files: ["./img/theah.PNG"]});
-    }
-
-    // DECK
-    if(msg.toString().trim().split(" ")[0]===prefixeTools.prefixDeck){
-        if(msg.toString().trim().length>5){
-            if(!deck[msg.toString().trim().split(" ")[1]])msg.channel.send("Cartes introuvable")
-            else {
-                msg.reply("La carte vous-on étais envoyer en message privé")
-                msg.author.send({files: [deck[msg.toString().trim().split(" ")[1]]]})}
-        }else{
-            msg.reply("Les cartes vous-on étais envoyer en message privé")
-            let tmpDeck = Object.keys(deck) 
-            msg.author.send(`\`\`\`${tmpDeck.map(e=>`🎴 ${e}`).join("\n")}\`\`\``)
-        }
-    }
-
-    // Save
+const save = async msg => {
     if(msg.toString().trim()===prefixeTools.prefixSave){
         try {
             players = players.forEach(e=> e.roll = undefined)
@@ -139,6 +179,6 @@ client.on('message',async msg=> {
             msg.channel.send(error)
         }
     }
-});
+}
 
 client.login(TOKEN)

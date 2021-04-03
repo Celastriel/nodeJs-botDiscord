@@ -37,14 +37,14 @@ module.exports = class Roll{
         let rolls = [...this.datas]; 
         rolls.sort().reverse(); //tri par ordre decroissant pour maximiser les paires
         
-        console.log(rolls);
+        //console.log(rolls);
 
         for(let i = 0; i < rolls.length; i++){ //on boucle sur le tableau
             if(rolls[i]){ // si x null on passe
                 if(rolls[i] == 10){ // si c'est 10, c'est une mise à lui seul
                     ++mise;
                     rolls[i] = null;
-                    console.log(i);
+                    //console.log(i);
                 } else {
                     for(let y = rolls.length-1; y >=0 ; y--){ // on boucle sur l'inverse du tableau
                         if(rolls[y]){ //si y null on passe
@@ -53,7 +53,7 @@ module.exports = class Roll{
                                     ++mise;
                                     rolls[i] = null;
                                     rolls[y] = null;
-                                    console.log(i + " & " + y);
+                                    //console.log(i + " & " + y);
                                     break;
                                 }
                             }
@@ -70,7 +70,7 @@ module.exports = class Roll{
             }
         };
 
-        console.log(tmp);
+        //console.log(tmp);
         if(tmp >= 10){
             ++mise;
         }
