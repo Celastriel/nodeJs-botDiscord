@@ -27,7 +27,7 @@ module.exports = class Roll{
         },0);
     }
     
-    mise(){/* if(this.datas.reduce( (a,e) => {
+    mise(miseValue){/* if(this.datas.reduce( (a,e) => {
             if(e>4)a++;
             return a;
         },0)===this.datas.length-1&&this.result().toString().charAt(1)<5){
@@ -42,23 +42,25 @@ module.exports = class Roll{
         
         console.log(rolls);
 
-        for(let i = 0; i < rolls.length; i++){ //on boucle sur le tableau
+        for(let i = 0; i < rolls.length; i++){
+            if(rolls[i] == miseValue){ // si c'est 10, c'est une mise à lui seul
+                ++mise;
+                rolls[i] = null;
+                console.log(i);
+            }
+        }
+
+        for(i = 0; i < rolls.length; i++){ //on boucle sur le tableau
             if(rolls[i]){ // si x null on passe
-                if(rolls[i] == 10){ // si c'est 10, c'est une mise à lui seul
-                    ++mise;
-                    rolls[i] = null;
-                    console.log(i);
-                } else {
-                    for(let y = rolls.length-1; y >=0 ; y--){ // on boucle sur l'inverse du tableau
-                        if(rolls[y]){ //si y null on passe
-                            if(i !== y){ 
-                                if(rolls[i]+rolls[y] >= 10){
-                                    ++mise;
-                                    rolls[i] = null;
-                                    rolls[y] = null;
-                                    console.log(i + " & " + y);
-                                    break;
-                                }
+                for(let y = rolls.length-1; y >=0 ; y--){ // on boucle sur l'inverse du tableau
+                    if(rolls[y]){ //si y null on passe
+                        if(i !== y){ 
+                            if(rolls[i]+rolls[y] >= miseValue){
+                                ++mise;
+                                rolls[i] = null;
+                                rolls[y] = null;
+                                console.log(i + " & " + y);
+                                break;
                             }
                         }
                     }
