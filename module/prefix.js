@@ -7,8 +7,7 @@ exports.prefixDeck = "&deck"
 exports.prefixInit = "&init"
 exports.prefixSave = "&save"
 exports.prefixDuel = "&duel"
-exports.prefixDuelPlay = "&duelplay"
-exports.prefixDuelEnd = "&duelEnd"
+
 exports.prefixInitDuelliste = "&initduelliste"
 exports.prefixAddCard = "&addcard"
 
