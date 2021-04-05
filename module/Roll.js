@@ -27,60 +27,153 @@ module.exports = class Roll{
         },0);
     }
     
-    mise(miseValue){return "👀"/* if(this.datas.reduce( (a,e) => {
-            if(e>4)a++;
-            return a;
-        },0)===this.datas.length-1&&this.result().toString().charAt(1)<5){
-            return Math.floor(this.result()/10)-1
-        }else{
-            return Math.floor(this.result()/10)
-        }*/
-        /*
+    mise(betValue = 10){
+        
         let mise = 0;
+
+        const addBet = betValue==10?1:2;
+
         let rolls = [...this.datas]; 
         rolls.reverse(); //tri par ordre decroissant pour maximiser les paires
-        
-        console.log(rolls);
 
-        for(var i = 0; i < rolls.length; i++){
-            if(rolls[i] == miseValue){ // si c'est 10, c'est une mise à lui seul
-                ++mise;
-                rolls[i] = null;
-                console.log(i);
-            }
-        }
-
-        for(i = 0; i < rolls.length; i++){ //on boucle sur le tableau
-            if(rolls[i]){ // si x null on passe
-                for(let y = rolls.length-1; y >=0 ; y--){ // on boucle sur l'inverse du tableau
-                    if(rolls[y]){ //si y null on passe
-                        if(i !== y){ 
-                            if(rolls[i]+rolls[y] >= miseValue){
-                                ++mise;
+        for(let i = 0; i < rolls.length; i++){
+            if(rolls[i]){
+                if(rolls[i] >= betValue){ //Sommation 01 dé
+                    mise += addBet;
+                    rolls[i] = null;
+                } else {
+                    for(let j = i + 1; j < rolls.length; i++){
+                        if(rolls[j]){
+                            if(rolls[i]+rolls[j] >= betValue){ //Sommation 02 dés
+                                mise += addBet;
                                 rolls[i] = null;
-                                rolls[y] = null;
-                                console.log(i + " & " + y);
-                                break;
+                                rolls[j] = null;
+                            } else {
+                                for(let k = j + 1; k < rolls.length; k++){
+                                    if(rolls[k]){
+                                        if(rolls[i]+rolls[j]+rolls[k] >= betValue){ //Sommation 03 dés
+                                            mise += addBet;
+                                            rolls[i] = null;
+                                            rolls[j] = null;
+                                            rolls[k] = null;
+                                        } else {
+                                            for(let l = k + 1; l < rolls.length; l++){
+                                                if(rolls[l]){
+                                                    if(rolls[i]+rolls[j]+rolls[k]+rolls[l] >= betValue){ //Sommation 04 dés
+                                                        mise += addBet;
+                                                        rolls[i] = null;
+                                                        rolls[j] = null;
+                                                        rolls[k] = null;
+                                                        rolls[l] = null;
+                                                    } else {
+                                                        for(let m = l + 1; m < rolls.length; m++){
+                                                            if(rolls[m]){
+                                                                if(rolls[i]+rolls[j]+rolls[k]+rolls[l]+rolls[m] >= betValue) { //Sommation 05 dés
+                                                                    mise += addBet;
+                                                                    rolls[i] = null;
+                                                                    rolls[j] = null;
+                                                                    rolls[k] = null;
+                                                                    rolls[l] = null;
+                                                                    rolls[m] = null;
+                                                                } else {
+                                                                    for(let n = m + 1; n < rolls.length; n++){
+                                                                        if(rolls[n]){
+                                                                            if(rolls[i]+rolls[j]+rolls[k]+rolls[l]+rolls[m]+rolls[n] >= betValue) { //Sommation 06 dés
+                                                                                mise += addBet;
+                                                                                rolls[i] = null;
+                                                                                rolls[j] = null;
+                                                                                rolls[k] = null;
+                                                                                rolls[l] = null;
+                                                                                rolls[m] = null;
+                                                                                rolls[n] = null;
+                                                                            } else {
+                                                                                for(let o = n + 1; o < rolls.length; o++){
+                                                                                    if(rolls[o]){
+                                                                                        if(rolls[i]+rolls[j]+rolls[k]+rolls[l]+rolls[m]+rolls[n]+rolls[o] >= betValue) { //Sommation 07 dés
+                                                                                            mise += addBet;
+                                                                                            rolls[i] = null;
+                                                                                            rolls[j] = null;
+                                                                                            rolls[k] = null;
+                                                                                            rolls[l] = null;
+                                                                                            rolls[m] = null;
+                                                                                            rolls[n] = null;
+                                                                                            rolls[o] = null;
+                                                                                        } else {
+                                                                                            for(let p = o + 1; p < rolls.length; p++){
+                                                                                                if(rolls[p]){
+                                                                                                    if(rolls[i]+rolls[j]+rolls[k]+rolls[l]+rolls[m]+rolls[n]+rolls[o]+rolls[p] >= betValue) { //Sommation 08 dés
+                                                                                                        mise += addBet;
+                                                                                                        rolls[i] = null;
+                                                                                                        rolls[j] = null;
+                                                                                                        rolls[k] = null;
+                                                                                                        rolls[l] = null;
+                                                                                                        rolls[m] = null;
+                                                                                                        rolls[n] = null;
+                                                                                                        rolls[o] = null;
+                                                                                                        rolls[p] = null;
+                                                                                                    } else {
+                                                                                                        for(let q = p + 1; q < rolls.length; q++){
+                                                                                                            if(rolls[q]){
+                                                                                                                if(rolls[i]+rolls[j]+rolls[k]+rolls[l]+rolls[m]+rolls[n]+rolls[o]+rolls[p]+rolls[q] >= betValue) { //Sommation 09 dés
+                                                                                                                    mise += addBet;
+                                                                                                                    rolls[i] = null;
+                                                                                                                    rolls[j] = null;
+                                                                                                                    rolls[k] = null;
+                                                                                                                    rolls[l] = null;
+                                                                                                                    rolls[m] = null;
+                                                                                                                    rolls[n] = null;
+                                                                                                                    rolls[o] = null;
+                                                                                                                    rolls[p] = null;
+                                                                                                                    rolls[q] = null;
+                                                                                                                } else {
+                                                                                                                    for(let r = q + 1; r < rolls.length; r++){
+                                                                                                                        if(rolls[r]){
+                                                                                                                            if(rolls[i]+rolls[j]+rolls[k]+rolls[l]+rolls[m]+rolls[n]+rolls[o]+rolls[p]+rolls[q]+rolls[r] >= betValue) { //Sommation 10 dés
+                                                                                                                                mise += addBet;
+                                                                                                                                rolls[i] = null;
+                                                                                                                                rolls[j] = null;
+                                                                                                                                rolls[k] = null;
+                                                                                                                                rolls[l] = null;
+                                                                                                                                rolls[m] = null;
+                                                                                                                                rolls[n] = null;
+                                                                                                                                rolls[o] = null;
+                                                                                                                                rolls[p] = null;
+                                                                                                                                rolls[q] = null;
+                                                                                                                                rolls[r] = null;
+                                                                                                                            } else {
+                                                                                                                                
+                                                                                                                            }
+                                                                                                                        }
+                                                                                                                    }
+                                                                                                                }
+                                                                                                            }
+                                                                                                        }
+                                                                                                    }
+                                                                                                }
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
                 }
             }
         }
-        
-        let tmp = 0;
-        for(let i = 0; i < rolls.length; i++){
-            if(rolls[i]){
-                tmp+=rolls[i];
-            }
-        };
 
-        console.log(tmp);
-        if(tmp >= 10){
-            ++mise;
-        }
-
-        return mise;*/
+        return mise;
     }
     
     rerollDice(){
