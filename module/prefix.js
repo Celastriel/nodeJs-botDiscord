@@ -8,6 +8,8 @@ exports.prefixInit = "&init"
 exports.prefixSave = "&save"
 exports.prefixDuel = "&duel"
 
+exports.prefixChangeState = "&stat"
+
 exports.prefixInitDuelliste = "&initduelliste"
 exports.prefixAddCard = "&addcard"
 

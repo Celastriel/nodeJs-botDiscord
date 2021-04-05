@@ -78,15 +78,34 @@ client.on('message',async msg=> {
             case prefixeTools.prefixAddCard : addCard(msg);break;
             case prefixeTools.prefixMap : map(msg);break;
 
+            case prefixeTools.prefixChangeState : changeStat(msg);break;
+
             case prefixeTools.prefixInventory : inventory(msg);break;
             case prefixeTools.prefixQuest : quest(msg);break;
+
             case prefixeTools.prefixSave : save(msg);break;
         }
     }
 });
 
 const help = msg => {
-    msg.channel.send(`\`\`\`Command:\n&roll n: Lancer les dés\n&reroll ...n: Relancer les dés de votre choix\n&map n: Afficher la carte\n&deck : vous envoye le deck en message privé\`\`\``)
+    msg.channel.send(`\`\`\`
+    Command:
+    &init : affiche comment créer un profil
+    &roll n: Lancer les dés
+    &reroll ...n: Relancer les dés de votre choix
+    &map : vous envoie les cartes
+    &map n: Afficher la carte
+    &deck : Vous envoie le deck en message privé
+    &initDuelliste : init l'état duelliste et le deck
+    &duel card : Jouer une carte de son deck
+    &addcard : ajoute une carte à votre deck
+    &bn : affiche le bloc note perso
+    &bn add/edit/remove n :ajoute édite ou supprime
+    &quest : affiche les quêtes
+    &quest add/edit/remove n : ajoute édite ou supprime
+    &save
+    \`\`\``)
 }
 
 const showDeck = msg => {
@@ -168,6 +187,16 @@ const info = msg => {
     }
 }
 
+const changeStat = msg => {
+    if(player!==undefined){
+        let type = msg.toString().trim().split(" ")[1];
+        let number = msg.toString().trim().split(" ")[2];
+        if(!isNaN(Number(number))){
+            player.changeStats(type, number);
+        }
+    }
+}
+
 const duel = msg => {
     const card = msg.toString().trim().split(" ")[1]
     if(isAdmin){
@@ -239,6 +268,8 @@ const map = async msg => {
             msg.reply(maps[msg.toString().trim().split(" ")[1]].split("/")[3].split(".")[0])
             msg.channel.send({files: [maps[msg.toString().trim().split(" ")[1]]]})
         }
+    }else{
+        msg.author.send(`${Object.keys(maps).join("\n")}`)
     }
 }
 
@@ -256,7 +287,7 @@ const inventory = async msg => {
             let index = Number(msg.toString().trim().split(" ")[2])
             if(!isNaN(index)){
                 if(index <= quests.length){
-                    inventorys[idUser][index+1]= msg.toString().trim().slice(7)
+                    inventorys[idUser][index-1]= msg.toString().trim().slice(11)
                 }
             }
         }else if(msg.toString().trim().split(" ")[1] == "remove"){
@@ -283,7 +314,7 @@ const quest = async msg => {
             let index = Number(msg.toString().trim().split(" ")[2])
             if(!isNaN(index)){
                 if(index <= quests.length){
-                    quests[index+1]= msg.toString().trim().slice(10)
+                    quests[index-1]= msg.toString().trim().slice(14)
                 }
             }
         }else if(msg.toString().trim().split(" ")[1] == "remove"){

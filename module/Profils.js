@@ -31,14 +31,17 @@ module.exports = class Profils{
 
     changeStats(type, number){
         switch(type){
-            case "heroism":
-                this.heroism += number;
+            case "hero":
+                this.heroism += Number(number);
                 break;
-            case "wealth":
-                this.wealth += number;
+            case "w":
+                this.wealth += Number(number);
                 break;
-            case "reputaion":
-                this.reputation += number;
+            case "rep":
+                this.reputation += Number(number);
+                break;
+            case "heal":
+                this.health += Number(number);
                 break;
             default:
                 return 0;
