@@ -1,5 +1,5 @@
-exports.prefixRoll = "&roll "
-exports.prefixReRoll = "&reroll "
+exports.prefixRoll = "&roll"
+exports.prefixReRoll = "&reroll"
 exports.prefixInfo = "&info"
 exports.prefixMap = "&map"
 exports.prefixHelp = "&help"

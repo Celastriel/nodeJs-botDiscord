@@ -2,8 +2,6 @@ module.exports = class Profils{
 
     roll;
     deck = {};
-    bufferCard;
-
     constructor(id,name, health, heroism, wealth, reputation){
         this.id = id;
         this.name = name;
@@ -11,7 +9,6 @@ module.exports = class Profils{
         this.heroism = heroism;
         this.wealth = wealth;
         this.reputation = reputation;
-        this.isDuellist = false;
     }
 
     showInfos(){

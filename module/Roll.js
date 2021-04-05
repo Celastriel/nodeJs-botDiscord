@@ -27,7 +27,7 @@ module.exports = class Roll{
         },0);
     }
     
-    mise(miseValue){/* if(this.datas.reduce( (a,e) => {
+    mise(miseValue){return "👀"/* if(this.datas.reduce( (a,e) => {
             if(e>4)a++;
             return a;
         },0)===this.datas.length-1&&this.result().toString().charAt(1)<5){
@@ -35,14 +35,14 @@ module.exports = class Roll{
         }else{
             return Math.floor(this.result()/10)
         }*/
-
+        /*
         let mise = 0;
         let rolls = [...this.datas]; 
         rolls.reverse(); //tri par ordre decroissant pour maximiser les paires
         
         console.log(rolls);
 
-        for(let i = 0; i < rolls.length; i++){
+        for(var i = 0; i < rolls.length; i++){
             if(rolls[i] == miseValue){ // si c'est 10, c'est une mise à lui seul
                 ++mise;
                 rolls[i] = null;
@@ -80,7 +80,7 @@ module.exports = class Roll{
             ++mise;
         }
 
-        return mise;
+        return mise;*/
     }
     
     rerollDice(){

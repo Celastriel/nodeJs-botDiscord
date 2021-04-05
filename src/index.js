@@ -19,14 +19,14 @@ const jsonPathInventory = "./json/inventory.json"
 const botEvent = new events.EventEmitter();
 const client = new discordTools.Client();
 
-let cardMJBuffer = undefined;
-
 let idUser;
+let isAdmin;
+let player;
 let prefix;
 let roll;
 
 let players = [];
-let inventory = [];
+let inventorys = [];
 let quests = [];
 
 client.on('ready', async () => {
@@ -51,14 +51,16 @@ client.on('ready', async () => {
     }
     if(fs.existsSync(jsonPathInventory)){
         const jsonInventory = await fsPromise.readFile(jsonPathInventory,'utf-8');
-        inventory = JSON.parse(jsonInventory);
+        inventorys = JSON.parse(jsonInventory);
     }else{
-        await fsPromise.writeFile(jsonPathInventory,JSON.stringify(inventory));
+        await fsPromise.writeFile(jsonPathInventory,JSON.stringify(inventorys));
     }
 });
 
 client.on('message',async msg=> {
     idUser = msg.author.id
+    isAdmin = msg.member.hasPermission("ADMINISTRATOR")
+    player = players.find(e=>e.id === idUser)
     const command = msg.toString().trim().charAt(0);
     prefix = msg.toString().trim().split(" ")[0];
     if(command === '&'){
@@ -84,7 +86,7 @@ client.on('message',async msg=> {
 });
 
 const help = msg => {
-    msg.channel.send(`\`\`\`Command:\n&roll n: Lancer les dés\n&reroll ...n: Relancer les dés de votre choix\n&map : Afficher la carte\n&deck : vous envoye le deck en message privé\`\`\``)
+    msg.channel.send(`\`\`\`Command:\n&roll n: Lancer les dés\n&reroll ...n: Relancer les dés de votre choix\n&map n: Afficher la carte\n&deck : vous envoye le deck en message privé\`\`\``)
 }
 
 const showDeck = msg => {
@@ -96,14 +98,14 @@ const showDeck = msg => {
             msg.author.send({files: [deck[msg.toString().trim().split(" ")[1]]]})
         }
     }else{
-        if(player === undefined){
+        if(player === undefined&&isAdmin){
             msg.reply("Les cartes vous-on étais envoyer en message privé")
             let tmpDeck = Object.keys(deck) 
             msg.author.send(`\`\`\`${tmpDeck.map(e=>`🎴 ${e}`).join("\n")}\`\`\``)
         }else{
             if(player.deck === {}){
                 msg.channel.send(`\`Vous n'est pas duelliste, restez à votre place\``)
-        }else{
+            }else{
                 msg.channel.send(`\`Votre deck vous a été livré en mp\``)
                 msg.author.send({files : player.showDeck()})
             }
@@ -131,7 +133,7 @@ const init = msg => {
 }
 
 const initduelliste = msg => {
-    const player = players.find(e=>e.id === idUser)
+    player = players.find(e=>e.id === idUser)
     if(player===undefined){
         msg.reply(`\`action impossible, navré\``)
     }else{
@@ -146,21 +148,20 @@ const initduelliste = msg => {
 }
 
 const addCard = msg => {  
-    const player = players.find(e=>e.id === idUser)
     const card = msg.toString().trim().split(" ")[1];
     if(player===undefined){
-        msg.reply(`\`PTDR T KI ?\``)
-    }else if(player.deck !== {}){
+        msg.reply(`\`action impossible, navré\``)
+    }else if(player.deck === {}){
         msg.reply(`\`Vous n'êtes pas un duelliste\``)
     }else if(deck[card]===undefined){
         msg.reply(`\`La carte n'existe pas\``)
     }else{
+        msg.reply(`\`La carte a bien été ajouter à votre deck\``)
         player.deck[card] = deck[card];
     }  
 }
 
 const info = msg => {
-    const player = players.find(e=>e.id === idUser)
     if(player!==undefined){
         msg.reply(`\`${player.showInfos()}\n${player.showHealth()}\``)
     }else{
@@ -168,7 +169,21 @@ const info = msg => {
 }
 
 const duel = msg => {
-    
+    const card = msg.toString().trim().split(" ")[1]
+    if(isAdmin){
+        if(deck[card]!==undefined){
+            msg.channel.send({files : [deck[card]]})
+        }
+    }
+    if(player!==undefined){
+        if(player.deck==={}){
+            msg.channel.send("non")
+        }else{
+            if(player.deck[card]!==undefined){
+                msg.channel.send({files : [player.deck[card]]})
+            }
+        }
+    }
 }
 
 const rollDice = msg => {
@@ -176,7 +191,6 @@ const rollDice = msg => {
     let user = players.find(e=>e.id === idUser);
     console.log(user)
     if(numberOfDice>rollTools.DICELIMITE){msg.reply(`\`\`\`Too many dice, inférieur à ${rollTools.DICELIMITE}\`\`\``);}
-    //else if(rollTools.DICE.find(e=>e===parseInt(typeOfDice))===undefined)msg.reply(`${typeOfDice} n'est pas initialisé comme dé valide`)
     else if(user !== undefined){
         user.roll = new rollTools(numberOfDice)
         user.roll.rollDice();
@@ -185,7 +199,7 @@ const rollDice = msg => {
             return s;
             },"")}Résultat : ${user.roll.result()}\nMises : ${user.roll.mise()}\`\`\``)
     }
-    else {
+    else if(isAdmin){
         roll = new rollTools(numberOfDice)
         roll.rollDice();
         msg.channel.send(`\`\`\`${roll.datas.reduce( (s,e,i) => {
@@ -195,54 +209,100 @@ const rollDice = msg => {
     }         
 }
 const reRollDice = async msg => {
-    let user = players.find(e=>e.id === idUser);
-    console.log(user)
-    if(user === undefined){
-        msg.channel.send(`\`\`\`Lancer d'abord des dés\`\`\``)
+    if(player !== undefined){
+        if(player.roll === undefined){msg.channel.send(`\`\`\`Lancer d'abord des dés\`\`\``)}
+        else if(!player.roll.rerollDice(...msg.toString().trim().slice(8).split(" "))){
+            msg.channel.send(`\`\`\`L'un des dés souhaité n'exite pas\`\`\``)
+        }else{
+            msg.channel.send(`\`\`\`${(player.name).toUpperCase()}:\n${player.roll.datas.reduce( (s,e,i) => {
+                s+=`${("0"+(i+1).toString()).slice(-2)}) 🎲 ${e} \n`;
+                return s;
+                },"")}Résultat : ${player.roll.result()}\nMises : ${player.roll.mise()}\`\`\``)
+            }
     }
-    else if(roll === undefined&&user.roll === undefined){
-        msg.channel.send(`\`\`\`Lancer d'abord des dés\`\`\``)
+    else if(roll === undefined){msg.channel.send(`\`\`\`Lancer d'abord des dés\`\`\``)}
+    else if(!roll.rerollDice(...msg.toString().trim().slice(8).split(" "))){
+        msg.channel.send(`\`\`\`L'un des dés souhaité n'exite pas\`\`\``)
     }
-    else {
-        if(user !== undefined){
-            if(!user.roll.rerollDice(...msg.toString().trim().slice(8).split(" "))){
-                msg.channel.send(`\`\`\`L'un des dés souhaité n'exite pas\`\`\``)
-            }else{
-                msg.channel.send(`\`\`\`${(user.name).toUpperCase()}:\n${user.roll.datas.reduce( (s,e,i) => {
-                    s+=`${("0"+(i+1).toString()).slice(-2)}) 🎲 ${e} \n`;
-                    return s;
-                    },"")}Résultat : ${user.roll.result()}\nMises : ${user.roll.mise()}\`\`\``)
-                }
-        }
-        else if(!roll.rerollDice(...msg.toString().trim().slice(8).split(" "))){
-             msg.channel.send(`\`\`\`L'un des dés souhaité n'exite pas\`\`\``)
-        }
-        else {
-            msg.channel.send(`\`\`\`${roll.datas.reduce( (s,e,i) => {
+    else if(isAdmin){
+        msg.channel.send(`\`\`\`${roll.datas.reduce( (s,e,i) => {
             s+=`${("0"+(i+1).toString()).slice(-2)}) 🎲 ${e} \n`;
             return s;
-            },"")}Résultat : ${roll.result()}\nMises : ${roll.mise()}\`\`\``) 
-        }
+        },"")}Résultat : ${roll.result()}\nMises : ${roll.mise()}\`\`\``) 
     }
 }
 
 const map = async msg => {
-
+    if(msg.toString().trim().length>5){
+        if(!maps[msg.toString().trim().split(" ")[1]])msg.channel.send("Cartes introuvable")
+        else {
+            msg.reply(maps[msg.toString().trim().split(" ")[1]].split("/")[3].split(".")[0])
+            msg.channel.send({files: [maps[msg.toString().trim().split(" ")[1]]]})
+        }
+    }
 }
 
 const inventory = async msg => {
-
+    if(player!==undefined){
+        if(msg.toString().trim().split(" ").length === 1){
+            if(inventorys[idUser]===undefined){inventorys[idUser]=[]}
+            msg.channel.send(`${inventorys[idUser].map((e,i)=> `${i+1}) ${e} \n`).join("")}`)
+        }
+        if(msg.toString().trim().split(" ")[1] == "add"){
+            if(inventorys[idUser]===undefined){inventorys[idUser]=[]}
+            inventorys[idUser].push(msg.toString().trim().slice(7))
+            msg.channel.send(`Inventory ajouter`)
+        }else if(msg.toString().trim().split(" ")[1] == "edit"){
+            let index = Number(msg.toString().trim().split(" ")[2])
+            if(!isNaN(index)){
+                if(index <= quests.length){
+                    inventorys[idUser][index+1]= msg.toString().trim().slice(7)
+                }
+            }
+        }else if(msg.toString().trim().split(" ")[1] == "remove"){
+            let index = Number(msg.toString().trim().split(" ")[2])
+            if(!isNaN(index)){
+                if(index <= quests.length){
+                    msg.channel.send(`Inventory supprimer`)
+                    inventorys[idUser] = inventorys[idUser].reduce((a,e,i) => {if((i+1)!=index){a.push(e)}return a},[])
+                }
+            }
+        }
+    } 
 }
 
-const quest = async msg => {
-
+const quest = async msg => {    
+    if(msg.toString().trim().split(" ").length === 1){
+        msg.channel.send(`${quests.map((e,i)=> `${i+1}) ${e} \n`).join("")}`)
+    }
+    if(isAdmin){
+        if(msg.toString().trim().split(" ")[1] == "add"){
+            quests.push(msg.toString().trim().slice(10))
+            msg.channel.send(`Quête ajouter`)
+        }else if(msg.toString().trim().split(" ")[1] == "edit"){
+            let index = Number(msg.toString().trim().split(" ")[2])
+            if(!isNaN(index)){
+                if(index <= quests.length){
+                    quests[index+1]= msg.toString().trim().slice(10)
+                }
+            }
+        }else if(msg.toString().trim().split(" ")[1] == "remove"){
+            let index = Number(msg.toString().trim().split(" ")[2])
+            if(!isNaN(index)){
+                if(index <= quests.length){
+                    msg.channel.send(`Quête supprimer`)
+                    quests = quests.reduce((a,e,i) => {if((i+1)!=index){a.push(e)}return a},[])
+                }
+            }
+        }
+    }
 }
 
 const save = async msg => {       
     players.forEach(e=> e.roll = undefined)
     await fsPromise.writeFile(jsonPathPlayer,JSON.stringify(players));
     await fsPromise.writeFile(jsonPathQuest,JSON.stringify(quests));
-    await fsPromise.writeFile(jsonPathInventory,JSON.stringify(inventory));
+    await fsPromise.writeFile(jsonPathInventory,JSON.stringify(Object.assign({},inventorys)));
     msg.channel.send("Nouvel ajout sauvegarder en local")
 }
 
