@@ -11,3 +11,6 @@ exports.prefixDuelPlay = "&duelplay"
 exports.prefixDuelEnd = "&duelEnd"
 exports.prefixInitDuelliste = "&initduelliste"
 exports.prefixAddCard = "&addcard"
+
+exports.prefixInventory = "&bn"
+exports.prefixQuest = "&quest"

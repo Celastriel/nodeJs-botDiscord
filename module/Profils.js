@@ -3,7 +3,6 @@ module.exports = class Profils{
     roll;
     deck = {};
     bufferCard;
-    isDuellist;
 
     constructor(id,name, health, heroism, wealth, reputation){
         this.id = id;
