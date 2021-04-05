@@ -31,18 +31,18 @@ module.exports = class Roll{
         
         let mise = 0;
 
-        const addBet = betValue==10?1:2;
+        let addBet;
+        if(betValue==10){addBet = 1}else{addBet = 2};
 
         let rolls = [...this.datas]; 
-        rolls.reverse(); //tri par ordre decroissant pour maximiser les paires
-
-        for(let i = 0; i < rolls.length; i++){
-            if(rolls[i]){
+        //rolls.reverse(); //tri par ordre decroissant pour maximiser les paires
+        for(let i = 0; i < rolls.length; i++){  
+            if(rolls[i]){ 
                 if(rolls[i] >= betValue){ //Sommation 01 dé
                     mise += addBet;
                     rolls[i] = null;
                 } else {
-                    for(let j = i + 1; j < rolls.length; i++){
+                    for(let j = i + 1; j < rolls.length; j++){
                         if(rolls[j]){
                             if(rolls[i]+rolls[j] >= betValue){ //Sommation 02 dés
                                 mise += addBet;
@@ -140,9 +140,7 @@ module.exports = class Roll{
                                                                                                                                 rolls[p] = null;
                                                                                                                                 rolls[q] = null;
                                                                                                                                 rolls[r] = null;
-                                                                                                                            } else {
-                                                                                                                                
-                                                                                                                            }
+                                                                                                                            } 
                                                                                                                         }
                                                                                                                     }
                                                                                                                 }
