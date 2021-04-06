@@ -33,11 +33,6 @@ module.exports = class Roll{
 
         let addBet;
         (betValue==10)? addBet = 1 : addBet = 2;
-<<<<<<< HEAD
-        
-        //rolls.reverse(); //tri par ordre decroissant pour maximiser les paires
-=======
->>>>>>> 009e143fcc1fc44a9cbde46fcf0e7dd90da8412e
 
         for(let i = 0; i < rolls.length; i++){ // 01
             if(rolls[i]){
