@@ -12,6 +12,8 @@ exports.prefixInit = "&init"
 exports.prefixSave = "&save"
 exports.prefixDuel = "&duel"
 
+exports.prefixDelete = "&delete"
+
 exports.prefixChangeState = "&stat"
 
 exports.prefixInitDuelliste = "&initduelliste"

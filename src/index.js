@@ -75,7 +75,7 @@ client.on('message',async msg=> {
             case prefixeTools.prefixReRoll : reRollDice(msg);break;
 
             case prefixeTools.prefixRoll15 : rollDice(msg,15);break;
-            case prefixeTools.prefixReRoll15 : rerollDice(msg,15);break;
+            case prefixeTools.prefixReRoll15 : reRollDice(msg,15);break;
 
             case prefixeTools.prefixDuel : duel(msg);break;
 
@@ -87,6 +87,8 @@ client.on('message',async msg=> {
             case prefixeTools.prefixInventory : inventory(msg);break;
             case prefixeTools.prefixQuest : quest(msg);break;
 
+            case prefixeTools.prefixDelete : deleted(msg);break;
+
             case prefixeTools.prefixSave : save(msg);break;
         }
     }
@@ -96,8 +98,12 @@ const help = msg => {
     msg.channel.send(`\`\`\`
     Command:
     &init : affiche comment créer un profil
+    &stat hero/w/rep/heal +-n : ajoute ou soustrait l'une de vos valeurs
     &roll n: Lancer les dés
     &reroll ...n: Relancer les dés de votre choix
+    &roll15 n: Lancer les dés avec la règle de mise de 15
+    &reroll15 ...n: Relancer les dés de votre choix avec la règle de mise de 15
+    &delete : supprime définitivement votre personnage
     &map : vous envoie les cartes
     &map n: Afficher la carte
     &deck : Vous envoie le deck en message privé
@@ -155,8 +161,17 @@ const init = msg => {
     }
 }
 
+const deleted = msg =>{
+    if(player!==undefined){
+        players = players.reduce( (a,e) => {
+            if(e.id != idUser){a.push(e);}
+            return a;
+        },[])
+        msg.reply(`\`${player.name} Supprimer\``)
+    }
+}
+
 const initduelliste = msg => {
-    player = players.find(e=>e.id === idUser)
     if(player===undefined){
         msg.reply(`\`action impossible, navré\``)
     }else{
@@ -197,6 +212,29 @@ const changeStat = msg => {
         let number = msg.toString().trim().split(" ")[2];
         if(!isNaN(Number(number))){
             player.changeStats(type, number);
+            switch(type){
+                case "hero" : if(player.heroism == 0){
+                    msg.reply("Vous n'avez plus de point d'héroisme")
+                };break;
+                case "w" : if(player.wealth == 0){
+                    msg.reply("Vous n'avez plus de money")
+                };break;
+                case "rep" : if(player.reputation == 0){
+                    msg.reply("Vous n'avez plus réputation")
+                };break;
+                case "heal" : console.log("test");if(player.health == 15){
+                    msg.reply("Vous arrivez au premier palier de la lose")
+                };
+                if(player.health == 10){
+                    msg.reply("Vous arrivez au deuxième palier de la lose")
+                };
+                if(player.health == 5){
+                    msg.reply("Vous arrivez au troisième palier de la lose")
+                };
+                if(player.health == 0){
+                    msg.reply("Vous êtes inconscient")
+                };break;
+            }   
         }
     }
 }
@@ -242,7 +280,7 @@ const rollDice = (msg,mise = 10) => {
 const reRollDice = async (msg,mise=10) => {
     if(player !== undefined){
         if(player.roll === undefined){msg.channel.send(`\`\`\`Lancer d'abord des dés\`\`\``)}
-        else if(!player.roll.rerollDice(...msg.toString().trim().slice(8).split(" "))){
+        else if(!player.roll.rerollDice(...msg.toString().trim().split(" ").slice(1))){
             msg.channel.send(`\`\`\`L'un des dés souhaité n'exite pas\`\`\``)
         }else{
             msg.channel.send(`\`\`\`${(player.name).toUpperCase()}:\n${player.roll.datas.reduce( (s,e,i) => {
@@ -252,7 +290,7 @@ const reRollDice = async (msg,mise=10) => {
             }
     }
     else if(roll === undefined){msg.channel.send(`\`\`\`Lancer d'abord des dés\`\`\``)}
-    else if(!roll.rerollDice(...msg.toString().trim().slice(8).split(" "))){
+    else if(!roll.rerollDice(...msg.toString().trim().split(" ").slice(1))){
         msg.channel.send(`\`\`\`L'un des dés souhaité n'exite pas\`\`\``)
     }
     else if(isAdmin){

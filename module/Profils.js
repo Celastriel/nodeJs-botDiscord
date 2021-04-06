@@ -12,7 +12,11 @@ module.exports = class Profils{
     }
 
     showInfos(){
-        return "\nBonjour "+ this.name +", vous avez " + this.heroism + " points d'héroisme, votre richesse est de " + this.wealth + ", et votre réputation de " + this.reputation; 
+        return `\`\`\`
+        Bonjour ${this.name} 
+        vous avez  ${this.heroism} points d'héroisme
+        votre richesse est de ${this.wealth}
+        votre réputation de ${this.reputation}\`\`\``; 
     }
     showHealth(){
         const spiral = ["","","","",1,"","","","",2,"","","","",3,"","","","",4]
@@ -30,21 +34,28 @@ module.exports = class Profils{
     }
 
     changeStats(type, number){
-        switch(type){
-            case "hero":
-                this.heroism += Number(number);
-                break;
-            case "w":
-                this.wealth += Number(number);
-                break;
-            case "rep":
-                this.reputation += Number(number);
-                break;
-            case "heal":
-                this.health += Number(number);
-                break;
-            default:
-                return 0;
+        number = parseInt(number)
+        if(type === "hero"){
+            this.heroism += number;
+            if(this.heroism <= 0){this.heroism = 0; return 1}
+            return 1;
         }
+        if(type === "w"){
+            this.wealth += number;
+            if(this.wealth <= 0){this.wealth = 0; return 1}  
+            return 1;
+        }
+        if(type === "rep"){
+            this.reputation += number;
+            if(this.reputation <= 0){this.reputation = 0;return 1}
+            return 1;
+        }         
+        if(type === "heal"){
+            this.health += number;
+            if(this.health <= 0){this.health = 0;return 1}
+            if(this.health >= 20){this.health = 20;return 1}
+            return 1;
+        }    
+        return 0;
     }
 }
