@@ -1,5 +1,9 @@
 exports.prefixRoll = "&roll"
 exports.prefixReRoll = "&reroll"
+
+exports.prefixRoll15 = "&roll15"
+exports.prefixReRoll15 = "&reroll15"
+
 exports.prefixInfo = "&info"
 exports.prefixMap = "&map"
 exports.prefixHelp = "&help"

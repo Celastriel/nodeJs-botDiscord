@@ -70,8 +70,12 @@ client.on('message',async msg=> {
             case prefixeTools.prefixInit : init(msg);break;
             case prefixeTools.prefixInitDuelliste : initduelliste(msg);break;
             case prefixeTools.prefixInfo : info(msg);break;
+
             case prefixeTools.prefixRoll : rollDice(msg);break;
             case prefixeTools.prefixReRoll : reRollDice(msg);break;
+
+            case prefixeTools.prefixRoll15 : rollDice(msg,15);break;
+            case prefixeTools.prefixReRoll15 : rerollDice(msg,15);break;
 
             case prefixeTools.prefixDuel : duel(msg);break;
 
@@ -215,91 +219,49 @@ const duel = msg => {
     }
 }
 
-const rollDice = msg => {
+const rollDice = (msg,mise = 10) => {
     let numberOfDice = parseInt(msg.toString().trim().split(" ")[1])
     if(numberOfDice>rollTools.DICELIMITE){msg.reply(`\`\`\`Too many dice, inférieur à ${rollTools.DICELIMITE}\`\`\``);}
     else if(player !== undefined){
         player.roll = new rollTools(numberOfDice)
         player.roll.rollDice();
-        if(msg.toString().trim().split(" ").length===3){
-            if(msg.toString().trim().split(" ")[3] === "s"){
-                msg.channel.send(`\`\`\`${(player.name).toUpperCase()}:\n${player.roll.datas.reduce( (s,e,i) => {
-                    s+=`${("0"+(i+1).toString()).slice(-2)}) 🎲 ${e} \n`;
-                    return s;
-                    },"")}Résultat : ${player.roll.result()}\nMises : ${player.roll.mise(15)}\`\`\``)
-            }
-        }else{
-            msg.channel.send(`\`\`\`${(player.name).toUpperCase()}:\n${player.roll.datas.reduce( (s,e,i) => {
-                s+=`${("0"+(i+1).toString()).slice(-2)}) 🎲 ${e} \n`;
-                return s;
-                },"")}Résultat : ${player.roll.result()}\nMises : ${player.roll.mise()}\`\`\``)
-        }
+        msg.channel.send(`\`\`\`${(player.name).toUpperCase()}:\n${player.roll.datas.reduce( (s,e,i) => {
+            s+=`${("0"+(i+1).toString()).slice(-2)}) 🎲 ${e} \n`;
+            return s;
+            },"")}Résultat : ${player.roll.result()}\nMises : ${player.roll.mise(mise)}\`\`\``)
     }
     else if(isAdmin){
         roll = new rollTools(numberOfDice)
         roll.rollDice();
-        if(msg.toString().trim().split(" ").length===3){
-            if(msg.toString().trim().split(" ")[3] === "s"){
-                msg.channel.send(`\`\`\`${roll.datas.reduce( (s,e,i) => {
-                    s+=`${("0"+(i+1).toString()).slice(-2)}) 🎲 ${e} \n`;
-                    return s;
-                    },"")}Résultat : ${roll.result()}\nMises : ${roll.mise(15)}\`\`\``) 
-            }
-        }else{
-            msg.channel.send(`\`\`\`${roll.datas.reduce( (s,e,i) => {
-                s+=`${("0"+(i+1).toString()).slice(-2)}) 🎲 ${e} \n`;
-                return s;
-                },"")}Résultat : ${roll.result()}\nMises : ${roll.mise()}\`\`\``) 
-        }
-        
+        msg.channel.send(`\`\`\`${roll.datas.reduce( (s,e,i) => {
+            s+=`${("0"+(i+1).toString()).slice(-2)}) 🎲 ${e} \n`;
+            return s;
+            },"")}Résultat : ${roll.result()}\nMises : ${roll.mise(mise)}\`\`\``) 
     }         
 }
-const reRollDice = async msg => {
+const reRollDice = async (msg,mise=10) => {
     if(player !== undefined){
         if(player.roll === undefined){msg.channel.send(`\`\`\`Lancer d'abord des dés\`\`\``)}
-        else if(msg.toString().trim().slice(8).split(" ")[msg.toString().trim().slice(8).split(" ").length-1]==="s"){
-            let dicedata = msg.toString().trim().slice(8).split(" ").pop()
-            if(!player.roll.rerollDice(...dicedata)){
-                msg.channel.send(`\`\`\`L'un des dés souhaité n'exite pas\`\`\``)
-            }else{
-                msg.channel.send(`\`\`\`${(player.name).toUpperCase()}:\n${player.roll.datas.reduce( (s,e,i) => {
-                    s+=`${("0"+(i+1).toString()).slice(-2)}) 🎲 ${e} \n`;
-                    return s;
-                    },"")}Résultat : ${player.roll.result()}\nMises : ${player.roll.mise(15)}\`\`\``)
-                }
-        }
-            if(roll === undefined){msg.channel.send(`\`\`\`Lancer d'abord des dés\`\`\``)}
-            else if(!roll.rerollDice(...dicedata)){
+        else if(!player.roll.rerollDice(...msg.toString().trim().slice(8).split(" "))){
             msg.channel.send(`\`\`\`L'un des dés souhaité n'exite pas\`\`\``)
-        }
-        else if(isAdmin){
-            msg.channel.send(`\`\`\`${roll.datas.reduce( (s,e,i) => {
-                s+=`${("0"+(i+1).toString()).slice(-2)}) 🎲 ${e} \n`;
-                return s;
-            },"")}Résultat : ${roll.result()}\nMises : ${roll.mise(15)}\`\`\``) 
-        }
         }else{
-            if(!player.roll.rerollDice(...msg.toString().trim().slice(8).split(" "))){
-                msg.channel.send(`\`\`\`L'un des dés souhaité n'exite pas\`\`\``)
-            }else{
-                msg.channel.send(`\`\`\`${(player.name).toUpperCase()}:\n${player.roll.datas.reduce( (s,e,i) => {
-                    s+=`${("0"+(i+1).toString()).slice(-2)}) 🎲 ${e} \n`;
-                    return s;
-                    },"")}Résultat : ${player.roll.result()}\nMises : ${player.roll.mise()}\`\`\``)
-                }
-        }
-        if(roll === undefined){msg.channel.send(`\`\`\`Lancer d'abord des dés\`\`\``)}
-        else if(!roll.rerollDice(...msg.toString().trim().slice(8).split(" "))){
-            msg.channel.send(`\`\`\`L'un des dés souhaité n'exite pas\`\`\``)
-        }
-        else if(isAdmin){
-            msg.channel.send(`\`\`\`${roll.datas.reduce( (s,e,i) => {
+            msg.channel.send(`\`\`\`${(player.name).toUpperCase()}:\n${player.roll.datas.reduce( (s,e,i) => {
                 s+=`${("0"+(i+1).toString()).slice(-2)}) 🎲 ${e} \n`;
                 return s;
-            },"")}Résultat : ${roll.result()}\nMises : ${roll.mise()}\`\`\``) 
-        }
+                },"")}Résultat : ${player.roll.result()}\nMises : ${player.roll.mise(mise)}\`\`\``)
+            }
     }
-
+    else if(roll === undefined){msg.channel.send(`\`\`\`Lancer d'abord des dés\`\`\``)}
+    else if(!roll.rerollDice(...msg.toString().trim().slice(8).split(" "))){
+        msg.channel.send(`\`\`\`L'un des dés souhaité n'exite pas\`\`\``)
+    }
+    else if(isAdmin){
+        msg.channel.send(`\`\`\`${roll.datas.reduce( (s,e,i) => {
+            s+=`${("0"+(i+1).toString()).slice(-2)}) 🎲 ${e} \n`;
+            return s;
+        },"")}Résultat : ${roll.result()}\nMises : ${roll.mise(mise)}\`\`\``) 
+    }
+}
 
 const map = async msg => {
     if(msg.toString().trim().length>5){
